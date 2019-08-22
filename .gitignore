@@ -17,7 +17,7 @@ movers/**/*.mov
 movers/**/*.mp4
 movers/**/*.json
 
-exports/
+export/
 
 out/
 
