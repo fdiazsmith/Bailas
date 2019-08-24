@@ -3,17 +3,14 @@
 import peasy.PeasyCam;
 
 PeasyCam cam;
+Openpose openpose;
 
-Grid grid;
 JSONObject settings;	
 
-File[] frames;
+
 Pixel[] joints;
 color bg = color(33,33,33,255*0.18 );
-JSONObject currentFrame;
-// number of joints comming in
-int bodyFormat = 25;
-float frameIndex = 0;
+
 
 /**
 * - useful to always have in a Pricessing day/
@@ -28,9 +25,7 @@ void settings( ){
   size = settings.getJSONObject("size");
 
   size(size.getInt("width"), size.getInt("height") , P3D );
-  // here we could add a check to see if the widht and height ar defined
-  // go go full screen if they are not.
-  // fullScreen( );
+ 
 }
 /**
 *
@@ -39,17 +34,17 @@ void settings( ){
 boolean oneloopCompleted = false;
 void setup() {
   cam = new PeasyCam(this, 400);
-  /** NOTE:  DON'T UPDATES THIS, USE THE settings.json **/
-  // size(600, 600);
+  
   surface.setResizable(true);
-  grid = new Grid( this );
-  frames = listFiles("data");
+  
+  
+  openpose = new Openpose("movers/pancitadeleche_1");
 
-  joints = new Pixel[bodyFormat];
-  for (int i = 0; i < bodyFormat; ++i) {
+  joints = new Pixel[openpose.bodyFormat];
+  for (int i = 0; i < joints.length; ++i) {
     joints[i] = new Pixel( new PVector(0,0), 10);
   }
-  fill(0, 0, 0);
+  fill(bg);
   rect(0, 0, width, height);
 }
 /**
@@ -62,44 +57,18 @@ void draw( ) {
     noStroke( );
     rect( 0, 0, width, height );
   // camera(mouseX, mouseY, (height) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
-  
-  // grid.set(myMovie);
-  // grid.update();
-  // image(myMovie, 0, 0, 200, 200);
-  // for (int i = 0; i < frames.length-2; ++i) {
-    
-    currentFrame = loadJSONObject("pancitadeleche_2_"+padNumber(int(frameIndex))+"_keypoints.json");
-    // currentFrame = loadJSONObject("test-dance_"+padNumber(frameIndex)+"_keypoints.json");
-     JSONArray peps = currentFrame.getJSONArray("people");
-  
-      for (int o = 0; o < peps.size(); o++) {
-        
-        JSONObject pep = peps.getJSONObject(o); 
+    openpose.loadFrame();
 
-        // int id = pep.pose_keypoints_2d("id");
-        JSONArray poseKeypoints2d = pep.getJSONArray("pose_keypoints_2d");
-        
-        int body25Index = 0;
-        for (int l = 0; l < poseKeypoints2d.size(); l+=3) {
-          joints[body25Index].setPos( new PVector(poseKeypoints2d.getFloat(l), poseKeypoints2d.getFloat(l+1)) );
-          joints[body25Index].update();
-          joints[body25Index].setSize(poseKeypoints2d.getFloat(l+2)*10);
-          body25Index++;
-          
-        }
-        
-      }
-  
-  if( frameIndex < frames.length-3) {
-    frameIndex+=0.3;
-  }
-  else{
-    frameIndex = 0;
-    oneloopCompleted = true;
-  }
-  if(!oneloopCompleted) {
-    // saveFrame("frames/lola-######.jpg");
+    
+    for (int l = 0; l < openpose.keypoints.length; l++) {
+      joints[l].setPos( openpose.keypoints[l] );
+      joints[l].setSize(openpose.keypointsConfidence[l] );
+      joints[l].update();
+      
+      
     }
+    openpose.update(); 
+
 }
 
 /**
@@ -107,7 +76,7 @@ void draw( ) {
 * @method keyReleased
 */
 void keyReleased( ) {
-  grid.released(key);
+  // grid.released(key);
 }
 
 /**
@@ -115,7 +84,7 @@ void keyReleased( ) {
 * @method keyPressed
 */
 void keyPressed( ) {
-  grid.pressed(key);
+  // grid.pressed(key);
 }
 
 /**
@@ -123,14 +92,14 @@ void keyPressed( ) {
 * @method mouseMoved
 */
 void mouseMoved( ) {
-  grid.mouseMoved();
+  // grid.mouseMoved();
 }
 /**
 *
 * @method mousePressed
 */
 void mousePressed() {
-  grid.mousePressed();
+  // grid.mousePressed();
 }
 
 String padNumber(long _num ){
@@ -172,17 +141,3 @@ String padNumber(long _num ){
   return padded;
 }
 
-/**
-  * @method listFiles – get
-  * @returns {File[]} - array of filepath.
-  */
-File[] listFiles( String dir ) {
-  File file = new File( sketchPath() + "/"+dir );
-  if ( file.isDirectory() ) {
-    File[] files = file.listFiles( );
-    return files;
-  } else {
-    // If it's not a directory
-    return null;
-  }
-}
