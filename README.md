@@ -4,3 +4,6 @@ Uses [openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) to ext
 
 ![dance by @pancitadeleche](export/panchitadeleche_1.gif)
 
+
+
+[openpose output ](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/output.md)
