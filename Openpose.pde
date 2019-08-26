@@ -9,6 +9,8 @@ class Openpose {
   File[] frames;
   JSONObject currentFrame;
 
+  ArrayList<Body> bodies =  new ArrayList<Body>();
+
   float frameIndex = 0;
   boolean oneloopCompleted = false;
   int framesPerSecond = 30;
@@ -61,7 +63,7 @@ class Openpose {
       keypointsConfidence[i] = 0;
       keypoints[i] = new PVector( 0, 0 );
     }
-    
+    bodies.add(new Body(bodyFormat) );
   }
 
   /**
@@ -73,17 +75,25 @@ class Openpose {
     currentFrame = loadJSONObject("./"+subPaths[0]+"/"+subPaths[1]+"/"+subPaths[1]+"_"+padNumber(int(frameIndex))+"_keypoints.json");
     
      JSONArray peps = currentFrame.getJSONArray("people");
-  
+      if( peps.size() > bodies.size() ){
+        for (int o = 0; o < peps.size(); o++) {
+
+        }
+      }
+
       for (int o = 0; o < peps.size(); o++) {
         
         JSONObject pep = peps.getJSONObject(o); 
         JSONArray poseKeypoints2d = pep.getJSONArray("pose_keypoints_2d");
-        
-        int body25Index = 0;
-        for (int l = 0; l < poseKeypoints2d.size(); l+=3) {
-          keypoints[body25Index].set( poseKeypoints2d.getFloat(l), poseKeypoints2d.getFloat(l+1) );
-          body25Index++;
-        }
+        Body body = bodies.get(0);
+        body.loadPose(poseKeypoints2d);
+        // int body25Index = 0;
+        // for (int l = 0; l < poseKeypoints2d.size(); l+=3) {
+        //   keypoints[body25Index].set( poseKeypoints2d.getFloat(l), poseKeypoints2d.getFloat(l+1) );
+        //   body25Index++;
+        // }
+        // Body body2 = bodies.get(1);
+        // println("body2: "+body2);
         
       }
   }

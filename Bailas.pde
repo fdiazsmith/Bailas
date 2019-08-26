@@ -59,14 +59,17 @@ void draw( ) {
   // camera(mouseX, mouseY, (height) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
     openpose.loadFrame();
 
-    
-    for (int l = 0; l < openpose.keypoints.length; l++) {
-      joints[l].setPos( openpose.keypoints[l] );
-      joints[l].setSize(openpose.keypointsConfidence[l] );
+  // The second is using an enhanced loop:
+  for (Body pose : openpose.bodies) {
+    //  pose.display();
+    for (int l = 0; l < pose.keypoints.length; l++) {
+      joints[l].setPos( pose.keypoints[l] );
+      joints[l].setSize(pose.keypointsConfidence[l] );
       joints[l].update();
-      
-      
     }
+  }
+    
+
     openpose.update(); 
 
 }
@@ -102,42 +105,5 @@ void mousePressed() {
   // grid.mousePressed();
 }
 
-String padNumber(long _num ){
-  String padded = "";
-  
-  if(_num < 10){
-    padded = "00000000000"+_num;
-  }
-  else if(_num < 100){
-    padded = "0000000000"+_num;
-  }
-  else if(_num < 1000){
-    padded = "000000000"+_num;
-  }
-  else if(_num < 10000){
-    padded = "00000000"+_num;
-  }
-  else if(_num < 100000){
-    padded = "0000000"+_num;
-  }
-  else if(_num < 1000000){
-    padded = "000000"+_num;
-  }
-  else if(_num < 10000000){
-    padded = "00000"+_num;
-  }
-  else if(_num < 100000000){
-    padded = "0000"+_num;
-  }
-  else if(_num < 1000000000){
-    padded = "000"+_num;
-  }
-  else if(_num < 10000000000L ){
-    padded = "00"+_num;
-  }
-  else if(_num < 100000000000L ){
-    padded = "0"+_num;
-  }
-  return padded;
-}
+
 
